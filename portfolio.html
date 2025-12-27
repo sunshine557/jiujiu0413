@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTFOLIO | 啾啾的小窝</title>
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/portfolio.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-logo">啾啾的小窝.</div>
+        <ul class="nav-links">
+            <li><a href="./landing.html">HOME</a></li>
+            <li><a href="./portfolio.html" class="active">PORTFOLIO</a></li>
+            <li><a href="./about.html">ABOUT</a></li>
+        </ul>
+    </nav>
+
+    <main class="content-area">
+            <section class="portfolio-section">
+                <header class="section-header">
+                    <h2 class="section-title">PORTFOLIO</h2>
+                    <p class="section-subtitle">A COLLECTION OF MOMENTS</p>
+                </header>
+    
+                <div class="portfolio-grid">
+                    <div class="portfolio-card" data-type="single" data-src="./images/gb1.jpg">
+                        <div class="card-wrapper">
+                            <img src="./images/gb1.jpg" alt="作品1">
+                        </div>
+                    </div>
+    
+                    <div class="portfolio-card" data-type="single" data-src="./images/p2.jpg">
+                        <div class="card-wrapper">
+                            <img src="./images/p2.jpg" alt="作品2">
+                        </div>
+                    </div>
+    
+                    <div class="portfolio-card" data-type="single" data-src="./images/p3.jpg">
+                        <div class="card-wrapper">
+                            <img src="./images/p3.jpg" alt="作品3">
+                        </div>
+                    </div>
+
+                    <div class="portfolio-card" data-type="single" data-src="./images/p4.jpg">
+                        <div class="card-wrapper">
+                            <img src="./images/p4.jpg" alt="作品4">
+                        </div>
+                    </div>
+
+                    
+                    <div class="portfolio-card" data-type="single" data-src="./images/p5.jpg">
+                        <div class="card-wrapper">
+                            <img src="./images/p5.jpg" alt="作品5">
+                        </div>
+                    </div>
+    
+                    <div class="portfolio-card collection-card" data-type="group" data-imgs='["./images/p7.jpg", "./images/p8.jpg", "./images/p9.jpg", "./images/p10.jpg"]'>
+                        <div class="card-wrapper">
+                            <div class="collection-stack">
+                                <div class="stack-item"><img src="./images/p7.jpg" alt=""></div>
+                                <div class="stack-item"><img src="./images/p8.jpg" alt=""></div>
+                                <div class="stack-item"><img src="./images/p9.jpg" alt=""></div>
+                                <div class="stack-item"><img src="./images/p10.jpg" alt=""></div>
+                            </div>
+                            <span class="collection-badge">SET / 4P</span>
+                        </div>
+                    </div>
+    
+                    <div class="portfolio-card" data-type="single" data-src="./images/p6.jpg">
+                        <div class="card-wrapper">
+                            <img src="./images/p6.jpg" alt="作品6">
+                        </div>
+                    </div>
+    
+                    <div class="portfolio-card" data-type="single" data-src="./images/p11.jpg">
+                        <div class="card-wrapper">
+                            <img src="./images/p11.jpg" alt="作品11">
+                        </div>
+                    </div>
+    
+                </div>
+            </section>
+        </main>
+
+    <div id="lightbox" class="lightbox">
+        <span class="close-lightbox">&times;</span>
+        <div class="lightbox-content-wrapper">
+            <button class="nav-btn" id="prev-btn">❮</button>
+            <img class="lightbox-content" id="lightbox-img">
+            <button class="nav-btn" id="next-btn">❯</button>
+        </div>
+    </div>
+
+    <script>
+        const cards = document.querySelectorAll('.portfolio-card');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeBtn = document.querySelector('.close-lightbox');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        let currentGroup = [];
+        let currentIndex = 0;
+        let isGroup = false;
+
+        cards.forEach(card => {
+            card.addEventListener('click', function () {
+                const type = this.getAttribute('data-type');
+                
+                if (type === 'single') {
+                    isGroup = false;
+                    const src = this.getAttribute('data-src');
+                    lightboxImg.src = src;
+                    prevBtn.style.display = 'none';
+                    nextBtn.style.display = 'none';
+                } else {
+                    isGroup = true;
+                    currentGroup = JSON.parse(this.getAttribute('data-imgs'));
+                    currentIndex = 0;
+                    updateLightboxImage();
+                    prevBtn.style.display = 'flex';
+                    nextBtn.style.display = 'flex';
+                }
+                
+                lightbox.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        function updateLightboxImage() {
+            lightboxImg.src = currentGroup[currentIndex];
+        }
+
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentIndex = (currentIndex - 1 + currentGroup.length) % currentGroup.length;
+            updateLightboxImage();
+        });
+
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentIndex = (currentIndex + 1) % currentGroup.length;
+            updateLightboxImage();
+        });
+
+        const closeLightbox = () => {
+            lightbox.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        };
+
+        closeBtn.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox || e.target.classList.contains('lightbox-content-wrapper')) {
+                closeLightbox();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.style.display === 'flex') {
+                if (e.key === 'Escape') closeLightbox();
+                if (isGroup) {
+                    if (e.key === 'ArrowLeft') prevBtn.click();
+                    if (e.key === 'ArrowRight') nextBtn.click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
